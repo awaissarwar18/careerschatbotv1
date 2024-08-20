@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Advice Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        #chatbox {
+            width: 400px;
+            max-width: 100%;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        #messages {
+            height: 300px;
+            overflow-y: scroll;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .message {
+            margin-bottom: 10px;
+        }
+        .user {
+            font-weight: bold;
+        }
+        .bot {
+            color: #007BFF;
+        }
+        #input {
+            display: flex;
+        }
+        #input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #input button {
+            padding: 10px;
+            background: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            margin-left: 5px;
+            cursor: pointer;
+        }
+        #input button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<div id="chatbox">
+    <div id="messages"></div>
+    <div id="input">
+        <input type="text" id="userInput" placeholder="Type your message here..." />
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<script>
+    async function sendMessage() {
+        const userInput = document.getElementById('userInput');
+        const message = userInput.value.trim();
+
+        if (message === "") return;
+
+        // Display the user's message
+        displayMessage("You", message, "user");
+
+        // Clear the input field
+        userInput.value = "";
+
+        // Send the message to the chatbot
+        const response = await fetch('/chatbot', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ query: message })
+        });
+
+        const data = await response.json();
+
+        // Display the bot's response
+        displayMessage("Bot", data.response, "bot");
+    }
+
+    function displayMessage(sender, message, type) {
+        const messagesDiv = document.getElementById('messages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message';
+
+        const senderSpan = document.createElement('span');
+        senderSpan.className = type;
+        senderSpan.textContent = sender + ": ";
+
+        messageDiv.appendChild(senderSpan);
+        messageDiv.appendChild(document.createTextNode(message));
+        messagesDiv.appendChild(messageDiv);
+
+        messagesDiv.scrollTop = messagesDiv.scrollHeight; // Scroll to the bottom
+    }
+</script>
+
+</body>
+</html>
